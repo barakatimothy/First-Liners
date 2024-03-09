@@ -7,7 +7,7 @@ export default function EnterLocationScreen({ navigation }) {
   const [allowLocation, setAllowLocation] = useState(false);
 
   const handleAllowLocation = () => {
-    // Implement logic to handle allowing location
+  
     console.log('Location allowed');
     setAllowLocation(true);
   };
