@@ -1,4 +1,3 @@
-// HomeScreen.js file
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -35,17 +34,16 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+    
       <Text style={styles.header}>FIRSTLINERS</Text>
 
-      {/* Introductory Message */}
       <Text style={styles.introMessage}>
         Introducing First Liners App, Your All-in-One Safety Application
       </Text>
 
-      {/* Buttons Section */}
+     
       <View style={styles.buttonsContainer}>
-        {/* Share Location Button */}
+        
         <TouchableOpacity
           style={[styles.button, isSharingLocation && styles.activeButton]}
           onPress={isSharingLocation ? stopSharingLocation : startSharingLocation}
@@ -55,7 +53,7 @@ export default function HomeScreen({ navigation }) {
           </Text>
         </TouchableOpacity>
 
-        {/* Get Home Safe Button */}
+        
         <TouchableOpacity
           style={styles.button}
           onPress={() => showMessage('Get Home Safe Clicked')}
@@ -64,7 +62,7 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Enter Location Button */}
+      
       <TouchableOpacity
         style={styles.enterLocationButton}
         onPress={() => showMessage('Enter Location Clicked')}
@@ -72,13 +70,13 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.buttonText}>Enter Location</Text>
       </TouchableOpacity>
 
-      {/* Card Section */}
+     
       <View style={styles.cardContainer}>
-        {/* Add Contact Person Card */}
+       
         <TouchableOpacity
           style={styles.card}
           onPress={() => {
-            navigation.navigate('AddContact'); // Navigate to AddContactScreen
+            navigation.navigate('AddContact'); 
             showMessage('Add Contact Clicked');
           }}
         >
@@ -89,7 +87,7 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.cardText}>Add Contact Person</Text>
         </TouchableOpacity>
 
-        {/* Discover Support Organizations Card */}
+        
         <TouchableOpacity
           style={styles.card}
           onPress={() => showMessage('Discover Support Organizations Clicked')}
@@ -102,7 +100,7 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Footer */}
+      
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.footerIcon}
@@ -140,7 +138,7 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Display Temporary Message */}
+      
       {message !== '' && (
         <View style={styles.messageContainer}>
           <Text style={styles.messageText}>{message}</Text>

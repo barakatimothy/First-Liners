@@ -1,11 +1,8 @@
-// App.js file
 import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from './HomeScreen'; // Import the HomeScreen component
-import AddContactScreen from './AddContactScreen'; // Import the AddContactScreen component
-
-// Stack Navigator
+import HomeScreen from './HomeScreen'; 
+import AddContactScreen from './AddContactScreen';
 const Stack = createStackNavigator();
 
 export default function App() {

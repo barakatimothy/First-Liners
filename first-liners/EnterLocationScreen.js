@@ -1,4 +1,4 @@
-// EnterLocationScreen.js
+
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
