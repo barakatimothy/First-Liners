@@ -1,10 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import * as Sms from 'expo-sms';
+import * as Location from 'expo-location';
 
 export default function HomeScreen({ navigation }) {
   const [message, setMessage] = useState('');
   const [isSharingLocation, setIsSharingLocation] = useState(false);
+
+  useEffect(() => {
+    // Request location permissions when the component mounts
+    (async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.error('Location permission not granted');
+      }
+    })();
+  }, []);
 
   const startSharingLocation = () => {
     // TODO: Implement logic to start sharing location with selected contacts
@@ -32,18 +44,39 @@ export default function HomeScreen({ navigation }) {
     }, 1000);
   };
 
+  const sendSOSMessage = async () => {
+    try {
+      const isAvailable = await Sms.isAvailableAsync();
+      if (isAvailable) {
+        const location = await Location.getCurrentPositionAsync({});
+        const { result } = await Sms.sendSMSAsync(
+          ['0781124081'],
+          `Help! I need assistance. My current location is: ${location.coords.latitude}, ${location.coords.longitude}`
+        );
+
+        if (result === Sms.SentStatus.SENT) {
+          showMessage('SOS message sent successfully');
+        } else {
+          showMessage('Failed to send SOS message');
+        }
+      } else {
+        showMessage('SMS is not available on this device');
+      }
+    } catch (error) {
+      console.error('Error sending SOS message:', error);
+      showMessage('Error sending SOS message');
+    }
+  };
+
   return (
     <View style={styles.container}>
-    
       <Text style={styles.header}>FIRSTLINERS</Text>
 
       <Text style={styles.introMessage}>
         Introducing First Liners App, Your All-in-One Safety Application
       </Text>
 
-     
       <View style={styles.buttonsContainer}>
-        
         <TouchableOpacity
           style={[styles.button, isSharingLocation && styles.activeButton]}
           onPress={isSharingLocation ? stopSharingLocation : startSharingLocation}
@@ -53,7 +86,6 @@ export default function HomeScreen({ navigation }) {
           </Text>
         </TouchableOpacity>
 
-        
         <TouchableOpacity
           style={styles.button}
           onPress={() => showMessage('Get Home Safe Clicked')}
@@ -62,7 +94,6 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      
       <TouchableOpacity
         style={styles.enterLocationButton}
         onPress={() => showMessage('Enter Location Clicked')}
@@ -70,13 +101,11 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.buttonText}>Enter Location</Text>
       </TouchableOpacity>
 
-     
       <View style={styles.cardContainer}>
-       
         <TouchableOpacity
           style={styles.card}
           onPress={() => {
-            navigation.navigate('AddContact'); 
+            navigation.navigate('AddContact');
             showMessage('Add Contact Clicked');
           }}
         >
@@ -87,7 +116,6 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.cardText}>Add Contact Person</Text>
         </TouchableOpacity>
 
-        
         <TouchableOpacity
           style={styles.card}
           onPress={() => showMessage('Discover Support Organizations Clicked')}
@@ -100,13 +128,13 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.footerIcon}
           onPress={() => showMessage('Home Clicked')}
         >
           <FontAwesome name="home" size={24} color="#334155" />
+          <Text>Home</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -114,13 +142,15 @@ export default function HomeScreen({ navigation }) {
           onPress={() => showMessage('Location Clicked')}
         >
           <FontAwesome name="map-marker" size={24} color="#334155" />
+          <Text>Location</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.footerIcon}
-          onPress={() => showMessage('SOS Clicked')}
+          onPress={sendSOSMessage}
         >
           <FontAwesome name="phone" size={24} color="#334155" />
+          <Text>SOS</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -128,6 +158,7 @@ export default function HomeScreen({ navigation }) {
           onPress={() => showMessage('Contacts Clicked')}
         >
           <FontAwesome name="address-book" size={24} color="#334155" />
+          <Text>Contacts</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -135,10 +166,10 @@ export default function HomeScreen({ navigation }) {
           onPress={() => showMessage('Profile Clicked')}
         >
           <FontAwesome name="user" size={24} color="#334155" />
+          <Text>Profile</Text>
         </TouchableOpacity>
       </View>
 
-      
       {message !== '' && (
         <View style={styles.messageContainer}>
           <Text style={styles.messageText}>{message}</Text>
@@ -153,8 +184,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between', // Adjusted justification
     padding: 20,
+    paddingBottom: 0, // Removed bottom padding
   },
   header: {
     fontSize: 24,
@@ -173,12 +205,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
+    width: '100%', // Adjusted width
   },
   button: {
     backgroundColor: '#33415E',
     padding: 15,
     borderRadius: 10,
-    flex: 0.48,
+    width: '48%', // Adjusted width
   },
   buttonText: {
     color: '#EFE8F0',
@@ -199,12 +232,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 20,
+    width: '100%', // Adjusted width
   },
   card: {
     backgroundColor: '#1E293B',
     padding: 20,
     borderRadius: 10,
-    width: '48%',
+    width: '48%', // Adjusted width
     alignItems: 'center',
     marginBottom: 10,
   },
@@ -219,14 +253,14 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly', // Adjusted spacing
     width: '100%',
     borderTopWidth: 1,
     paddingTop: 10,
-    marginTop: 20,
   },
   footerIcon: {
     alignItems: 'center',
+    marginBottom: 5,
   },
   messageContainer: {
     position: 'absolute',
