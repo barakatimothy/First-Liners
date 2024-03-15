@@ -43,17 +43,21 @@ export default function HomeScreen({ navigation }) {
       setMessage('');
     }, 1000);
   };
-
   const sendSOSMessage = async () => {
     try {
       const isAvailable = await Sms.isAvailableAsync();
       if (isAvailable) {
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.error('Location permission not granted');
+          showMessage('Location permission not granted');
+          return;
+        }
+  
         const location = await Location.getCurrentPositionAsync({});
-        const { result } = await Sms.sendSMSAsync(
-          ['0781124081'],
-          `Help! I need assistance. My current location is: ${location.coords.latitude}, ${location.coords.longitude}`
-        );
-
+        const messageContent = `Help! I need assistance. My current location is: ${location.coords.latitude}, ${location.coords.longitude}`;
+        const { result } = await Sms.sendSMSAsync(['0781124081'], messageContent);
+  
         if (result === Sms.SentStatus.SENT) {
           showMessage('SOS message sent successfully');
         } else {
@@ -65,6 +69,30 @@ export default function HomeScreen({ navigation }) {
     } catch (error) {
       console.error('Error sending SOS message:', error);
       showMessage('Error sending SOS message');
+    }
+  };
+  
+
+  const getHomeSafe = async () => {
+    try {
+      const isAvailable = await Sms.isAvailableAsync();
+      if (isAvailable) {
+        const { result } = await Sms.sendSMSAsync(
+          ['0781124081'],
+          'I have arrived home safely.'
+        );
+
+        if (result === Sms.SentStatus.SENT) {
+          showMessage('Message sent: I have arrived home safely');
+        } else {
+          showMessage('Failed to send message');
+        }
+      } else {
+        showMessage('SMS is not available on this device');
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      showMessage('Error sending message');
     }
   };
 
@@ -88,7 +116,7 @@ export default function HomeScreen({ navigation }) {
 
         <TouchableOpacity
           style={styles.button}
-          onPress={() => showMessage('Get Home Safe Clicked')}
+          onPress={getHomeSafe}
         >
           <Text style={styles.buttonText}>Get Home Safe</Text>
         </TouchableOpacity>
@@ -275,3 +303,4 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 });
+
